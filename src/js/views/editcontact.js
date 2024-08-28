@@ -33,9 +33,6 @@ export const EditContact = () => {
     };
 
 
-
-
-
     return (
         <>
             <h1 className="title text-center mt-5 mb-4">Edit Contact</h1>
@@ -46,7 +43,7 @@ export const EditContact = () => {
                 </div>
                 <div className="mb-3">
                     <label htmlFor="mailInput" className="form-label">Mail</label>
-                    <input type="email" className="form-control" name="mail" id="mailInput" value={storedContact.email} onChange={(e) => handleChange(e)} />
+                    <input type="email" className="form-control" name="email" id="mailInput" value={storedContact.email} onChange={(e) => handleChange(e)} />
                 </div>
                 <div className="mb-3">
                     <label htmlFor="phoneInput" className="form-label">Phone Number</label>
