@@ -1,3 +1,4 @@
+
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
@@ -71,11 +72,11 @@ const getState = ({ getStore, getActions, setStore }) => {
 					return data
 					})
 				.catch(error => {
-						console.error("Error fetching Agenda", error);
+						console.error("Error fetching Contacts", error);
 					});
 			},
 
-			addContact: (newContact) => {
+			addContact: (newContact, navigate) => {
 				fetch("https://playground.4geeks.com/contact/agendas/ElefanteDescuartizado/contacts", {
 					method: "POST",
 					headers: {
@@ -88,55 +89,56 @@ const getState = ({ getStore, getActions, setStore }) => {
 				})
 				.then(data => {
 					const store = getStore();
-					setStore({ contacts: [data, ...store.contacts]})
+					setStore({ contacts: [data, ...store.contacts]})					
 				})
 				.catch(error => {
 					console.error("Error adding contact", error)
 				})
+				navigate("/");
 			},
 
-			deleteContact: (contactId) => {
-				fetch("https://playground.4geeks.com/contact/agendas/ElefanteDescuartizado/contacts" + contactId, {
+			deleteContact: (id) => {
+				console.log(id)
+				fetch(`https://playground.4geeks.com/contact/agendas/ElefanteDescuartizado/contacts/${id}`, {
 					method: "DELETE",
 					headers: {
 						'Content-Type': 'application/json'
 					  },
 					redirect: "follow",
-					body: JSON.stringify(newContact)
 				})
-				.then(response =>  {
-					console.log(response)
+				.then(response =>  {	
+					if(response.ok)	{			
+					console.log(response);
+					response.text()
+					}
 				})
 				.then(data => {
-					console.log(data);
-					const contacts = store.contacts.filter((contact) => contact.id !== contactId);
-					setStore({ contacts: contacts });
+					console.log("Data", data);
+					getActions().getContacts();
 				})
 				.catch(error => {
 					console.error("Error deleting contact", error)
 				})
 			},
 
-			updateContact: (updatedContact) => {
-				fetch(`https://playground.4geeks.com/contact/agendas/ElefanteDescuartizado/contacts/${updatedContact.id}`, {
+			updateContact: (contact, navigate) => {
+				fetch(`https://playground.4geeks.com/contact/agendas/ElefanteDescuartizado/contacts/${contact.id}`, {
 					method: 'PUT',
 					headers: {
 						'Content-Type': 'application/json'
 					},
-					body: JSON.stringify(updatedContact)
+					body: JSON.stringify(contact),
 				})
-				.then(resp => resp.json())
+				.then(response => response.json())
 				.then(data => {
 					console.log(data);
-					const store = getStore();
-					const updatedContacts = store.contacts.map(contact => 
-						contact.id === updatedContact.id ? updatedContact : contact
-					);
-					setStore({ contacts: updatedContacts });
+					getActions().getContacts();
+					
 				})
 				.catch(error => {
 					console.error("Error updating the contact info", error);
 				});
+				navigate("/");
 			},			
 		}
 	};

@@ -1,4 +1,5 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { Context } from "../store/appContext";
 import { Navbar } from "../component/navbar";
@@ -8,32 +9,12 @@ import "../../styles/agenda.css";
 
 export const Agenda = () => {
     const { store, actions } = useContext(Context);
-	const [ loadContacts, setLoadContacts] = useState(true);
-	const [ selectedContact, setSelectedContact ] = useState(null);
-	const [ editContact, setEditContact ] = useState(null);
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		actions.checkAgenda();
 	  }, []);
 
-	  const handleEditContact = (contact) => {
-		setEditContact(contact);
-		// setShowEditModal(true);
-	  };
-
-	  const handleUpdateContact = (updatedContact) => {
-		console.log("Updated Contact:", updatedContact);
-		actions.updateContact(updatedContact, 
-			() => {
-				console.log("Contact updated successfully");
-				setEditContact(null);
-				// setShowEditModal(false);
-			},
-			() => {
-				console.error("Error updating contact");
-			}
-		);
-	};
 
 	return (
 	<>
@@ -43,6 +24,7 @@ export const Agenda = () => {
 			<ul>
 			{store.contacts.map((contact) => {
 					return (
+						<>
 						<li
 							key={contact.id}
 							className="contact list-group-item d-flex border border-secondary rounded-3 mb-3">
@@ -67,18 +49,40 @@ export const Agenda = () => {
 								</div>
 							<div className="buttons col-4 float-end">
 							<Link to={`/editcontact/${contact.id}`}>						
-								<button className="btn editButton btn-outline-primary d-block mb-2" onClick={()=> handleEditContact(contact)}><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-pencil-square" viewBox="0 0 16 16">
+								<button className="btn editButton btn-outline-primary d-block mb-2"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-pencil-square" viewBox="0 0 16 16">
 									<path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
 									<path fillRule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
 									</svg>
 								</button>
 							</Link>
-								<button className="btn deleteButton btn-outline-danger d-block" onClick={()=> setSelectedContact(contact.id)}><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-trash3" viewBox="0 0 16 16">
+								<button className="btn deleteButton btn-outline-danger d-block"data-bs-toggle="modal" data-bs-target="#deleteModal"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-trash3" viewBox="0 0 16 16">
 									<path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
 									</svg>
 								</button>
-							</div>
+							</div>							         
 						</li>
+
+						<div className="modal fade" id="deleteModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div className="modal-dialog">
+                            <div className="modal-content">
+                            <div className="modal-header">
+                                <h1 className="modal-title fs-5 text-danger" id="deleteModalLabel"><strong>Delete contact</strong></h1>
+                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div className="modal-body">
+								Are you sure you want to delete the contact?
+                            </div>
+                            <div className="modal-footer">
+								<button type="button" onClick={()=> actions.deleteContact(contact.id)} className="btn btn-danger">F*** this person! <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-emoji-smile-upside-down" viewBox="0 0 16 16">
+									<path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1m0-1a8 8 0 1 1 0 16A8 8 0 0 1 8 0"/>
+									<path d="M4.285 6.433a.5.5 0 0 0 .683-.183A3.5 3.5 0 0 1 8 4.5c1.295 0 2.426.703 3.032 1.75a.5.5 0 0 0 .866-.5A4.5 4.5 0 0 0 8 3.5a4.5 4.5 0 0 0-3.898 2.25.5.5 0 0 0 .183.683M7 9.5C7 8.672 6.552 8 6 8s-1 .672-1 1.5.448 1.5 1 1.5 1-.672 1-1.5m4 0c0-.828-.448-1.5-1-1.5s-1 .672-1 1.5.448 1.5 1 1.5 1-.672 1-1.5"/>
+								</svg></button> 
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                            </div>
+						</div>
+						</div>
+					</>
 					);
 				})}
 			</ul>

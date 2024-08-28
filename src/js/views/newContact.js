@@ -3,12 +3,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { Context } from "../store/appContext";
 
 import "../../styles/newContact.css";
-// import { func } from "prop-types";
 
 export const AddContact = () => {
-    const { store, actions } = useContext(Context);
-    // const [ showModal, setShowModal ] = useState(false);
-    // const [ showCentered, setShowCentered ] = useState (false);
+    const { actions } = useContext(Context);
     const [ newContact, setNewContact] = useState ({
         name: "",
         email: "",
@@ -19,17 +16,11 @@ export const AddContact = () => {
 
     const submitChanges = (event) => {
         event.preventDefault();
-
         const { name, phone } = newContact;
         
         if(!name.trim() || !phone.trim()) {
-            // setShowModal(true);
-            // setShowCentered(false)
-            // alert("Please, fill the Fullname and Phone inputs")
             console.log(newContact)
         } else {
-            // setShowModal(true);
-            // setShowCentered(true);
             actions.addContact(newContact, () => {
                 setTimeout(() => navigate("/"))}, 2000);
         }
@@ -59,27 +50,29 @@ export const AddContact = () => {
                             Save contact
                         </button>
                     </div>
+                    </form>
 
                     <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div className="modal-dialog">
                             <div className="modal-content">
-                            <div className="modal-header">
-                                <h1 className="modal-title fs-5" id="exampleModalLabel"><strong>{!newContact.name.trim() || !newContact.phone.trim() ? "Error" : "New Contact"}</strong></h1>
-                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div className="modal-body">
-                            {!newContact.name.trim() || !newContact.phone.trim() ? "Please, fill the Fullname and Phone inputs" : "Contact added succssesfully"}
-                            </div>
-                            <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            </div>
+                                <div className="modal-header">
+                                    <h1 className={!newContact.name.trim() || !newContact.phone.trim() ? "modal-title fs-5 text-danger" : "modal-title fs-5 text-success"} id="exampleModalLabel"><strong>{!newContact.name.trim() || !newContact.phone.trim() ? "Error" : "New Contact"}</strong></h1>
+                                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div className="modal-body">
+                                    {!newContact.name.trim() || !newContact.phone.trim() ? "Please, fill the Fullname and Phone inputs" : "Contact added succssesfully"}
+                                </div>
+                                <div className="modal-footer">
+                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                </div>
                             </div>
                         </div>
                     </div>
+
                     <Link to="/">
                         <button className="btn btn-outline-primary">Back to Agenda</button>
                     </Link>
-                </form>
+                
             </>      
         ) 
     }
